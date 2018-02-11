@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as courseAction from '../../actions/courseAction';
 import CourseForm from './CourseForm';
+import toastr from 'toastr'; 
 
 export class ManageCoursePage extends Component {
     constructor(props, context) {
@@ -10,7 +11,8 @@ export class ManageCoursePage extends Component {
 
         this.state = {
             course: Object.assign({}, this.props.course),
-            error: {}
+            error: {}, 
+            saving : false
         };
         this.updateCourseState = this.updateCourseState.bind(this);     
         this.saveCourse = this.saveCourse.bind(this);   
@@ -31,18 +33,30 @@ export class ManageCoursePage extends Component {
 
     saveCourse(event){
         event.preventDefault();
+        this.setState({saving: true});
         this.props.actions.saveCourse(this.state.course)
+        .then(() => this.redirect())
+        .catch(error => {
+            toastr.error(error);
+            this.setState({saving: false})
+        })     
+    }
+
+    redirect(){
+        this.setState({saving:false});
+        toastr.success('Course saved');
         this.context.router.push('/courses');
     }
 
     render() {
         return (
                 <CourseForm 
-                    onChange={this.updateCourseState}
-                    onSave={this.saveCourse}
-                    allAuthors={this.props.authors}
-                    course={this.state.course}
-                    errors={this.state.course}
+                onChange={this.updateCourseState}
+                onSave={this.saveCourse}
+                course={this.state.course}
+                errors={this.state.errors}
+                allAuthors={this.props.authors}
+                    saving={this.state.saving}
                 />
         );
     }
@@ -51,16 +65,16 @@ export class ManageCoursePage extends Component {
 ManageCoursePage.propTypes = {
     course: PropTypes.object.isRequired,
     authors : PropTypes.array.isRequired,
-    actions : PropTypes.array.isRequired
+    actions : PropTypes.object.isRequired
 };
 
 ManageCoursePage.contextTypes = {
     router: PropTypes.object
 }
-
 function getCourseById(courses, id){
+    
     const course = courses.filter(course => course.id == id);
-    if(course.length) return course[0];
+    if(course) return course[0];
     return null;
 }
 

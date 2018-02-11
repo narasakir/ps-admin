@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import TextInput from '../common/TextInput';
 import SelectInput from '../common/SelectInput';
 
-const CourseForm = ({course, allAuthors, onSave, onChange, loading, errors}) => {
+const CourseForm = ({course, allAuthors, onSave, onChange, saving, errors}) => {
   return (
     <form>
       <h1>Manage Course</h1>
@@ -10,8 +10,7 @@ const CourseForm = ({course, allAuthors, onSave, onChange, loading, errors}) => 
         name="title"
         label="Title"
         value={course.title}
-        onChange={onChange}
-        error={errors.title}/>
+        onChange={onChange}/>
 
       <SelectInput
         name="authorId"
@@ -19,26 +18,24 @@ const CourseForm = ({course, allAuthors, onSave, onChange, loading, errors}) => 
         value={course.authorId}
         defaultOption="Select Author"
         options={allAuthors}
-        onChange={onChange} error={errors.authorId}/>
+        onChange={onChange} />
 
       <TextInput
         name="category"
         label="Category"
         value={course.category}
-        onChange={onChange}
-        error={errors.category}/>
+        onChange={onChange}/>
 
       <TextInput
         name="length"
         label="Length"
         value={course.length}
-        onChange={onChange}
-        error={errors.length}/>
+        onChange={onChange}/>
 
       <input
         type="submit"
-        disabled={loading}
-        value={loading ? 'loading...' : 'Save'}
+        disabled={saving}
+        value={saving ? 'Saving...' : 'Save'}
         className="btn btn-primary"
         onClick={onSave}/>
     </form>
@@ -50,7 +47,7 @@ CourseForm.propTypes = {
   allAuthors: PropTypes.array.isRequired,
   onSave: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
-  loading: PropTypes.bool,
+  saving: PropTypes.bool,
   errors: PropTypes.object
 };
 
